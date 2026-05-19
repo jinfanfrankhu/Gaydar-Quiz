@@ -49,6 +49,13 @@ export default function QuizPage() {
   const [batchResults, setBatchResults] = useState<BatchResult[]>([]);
   const [totalScore, setTotalScore] = useState(0);
   const [batchNumber, setBatchNumber] = useState(1);
+  const [timeOnSpeaker, setTimeOnSpeaker] = useState(0);
+
+  useEffect(() => {
+    setTimeOnSpeaker(0);
+    const interval = setInterval(() => setTimeOnSpeaker(t => t + 1), 1000);
+    return () => clearInterval(interval);
+  }, [currentIdx]);
 
   useEffect(() => {
     const raw = localStorage.getItem('gaydar_session');
@@ -262,6 +269,7 @@ export default function QuizPage() {
             key={current.fileId}
             src={`/audio/${current.fileId}.mp3`}
             controls
+            autoPlay
             className="w-full"
           />
           <p className="text-center text-xs text-zinc-400 mt-3">
@@ -292,7 +300,7 @@ export default function QuizPage() {
 
         <button
           onClick={handleNext}
-          disabled={selectedRating === null}
+          disabled={selectedRating === null || timeOnSpeaker < 5}
           className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-200 disabled:text-zinc-400 text-white py-3 rounded-xl font-medium transition-colors"
         >
           {currentIdx < batch.length - 1 ? 'Next Speaker →' : 'Submit Batch'}
