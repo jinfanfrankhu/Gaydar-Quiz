@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function LandingPage() {
@@ -9,18 +9,19 @@ export default function LandingPage() {
   const [nativeEng, setNativeEng] = useState<boolean | null>(null);
   const [error, setError] = useState('');
 
-  function handleSubmit(e: FormEvent) {
+  function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
     const year = parseInt(birthYear);
-    if (isNaN(year) || year < 1920 || year > 2010) {
+    const isTestMode = year === -1;
+    if (!isTestMode && (isNaN(year) || year < 1920 || year > 2010)) {
       setError('Please enter a valid birth year (1920–2010).');
       return;
     }
-    if (nativeEng === null) {
+    if (!isTestMode && nativeEng === null) {
       setError('Please select your English background.');
       return;
     }
-    const session = { birthYear: year, nativeEng, seenFileIds: [], sessionId: crypto.randomUUID() };
+    const session = { birthYear: year, nativeEng: isTestMode ? true : nativeEng, seenFileIds: [], sessionId: crypto.randomUUID() };
     localStorage.setItem('gaydar_session', JSON.stringify(session));
     router.push('/quiz');
   }
@@ -75,7 +76,7 @@ export default function LandingPage() {
                   value={birthYear}
                   onChange={e => setBirthYear(e.target.value)}
                   placeholder="e.g. 1995"
-                  min={1920}
+                  min={-1}
                   max={2010}
                   className="w-full border border-zinc-200 rounded-xl px-4 py-3 text-base text-zinc-900 placeholder-zinc-400 bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent focus:bg-white transition-colors"
                 />
