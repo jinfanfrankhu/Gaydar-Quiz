@@ -7,13 +7,14 @@ export const files = pgTable('files', {
 });
 
 export const ratings = pgTable('ratings', {
-  id:        serial('id').primaryKey(),
-  sessionId: text('session_id'),               // UUID generated on landing page; nullable for old rows
-  fileId:    text('file_id').notNull(),
-  birthYear: integer('birth_year').notNull(),
-  nativeEng: boolean('native_eng').notNull(),
-  rating:    integer('rating').notNull(),       // 1-5
-  createdAt: timestamp('created_at').defaultNow(),
+  id:         serial('id').primaryKey(),
+  sessionId:  text('session_id'),               // UUID generated on landing page; nullable for old rows
+  fileId:     text('file_id').notNull(),
+  birthYear:  integer('birth_year').notNull(),
+  nativeEng:  boolean('native_eng').notNull(),
+  isProlific: boolean('is_prolific'),            // NULL = pre-Prolific launch (unknown), false = organic, true = Prolific
+  rating:     integer('rating').notNull(),       // 1-5
+  createdAt:  timestamp('created_at').defaultNow(),
 }, (t) => [
   index('ratings_file_id_idx').on(t.fileId),
   uniqueIndex('ratings_session_file_idx').on(t.sessionId, t.fileId),

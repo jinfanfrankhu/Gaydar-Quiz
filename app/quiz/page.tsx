@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 interface Session {
   birthYear: number;
   nativeEng: boolean;
+  isProlific?: boolean;
   seenFileIds: string[];
   sessionId: string;
 }
@@ -107,6 +108,7 @@ export default function QuizPage() {
         ratings: finalCollected,
         birthYear: session.birthYear,
         nativeEng: session.nativeEng,
+        isProlific: session.isProlific ?? false,
         sessionId: session.sessionId,
       }),
     });
@@ -140,7 +142,8 @@ export default function QuizPage() {
 
   function handleDone() {
     const totalRated = session?.seenFileIds.length ?? 0;
-    router.replace(`/done?score=${totalScore}&total=${totalRated}`);
+    const prolificParam = session?.isProlific ? '&prolific=true' : '';
+    router.replace(`/done?score=${totalScore}&total=${totalRated}${prolificParam}`);
   }
 
   // ── Loading ──────────────────────────────────────────────────────────────

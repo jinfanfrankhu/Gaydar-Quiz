@@ -7,6 +7,7 @@ export default function LandingPage() {
   const router = useRouter();
   const [birthYear, setBirthYear] = useState('');
   const [nativeEng, setNativeEng] = useState<boolean | null>(null);
+  const [isProlific, setIsProlific] = useState<boolean | null>(null);
   const [error, setError] = useState('');
 
   function handleSubmit(e: { preventDefault(): void }) {
@@ -21,7 +22,11 @@ export default function LandingPage() {
       setError('Please select your English background.');
       return;
     }
-    const session = { birthYear: year, nativeEng: isTestMode ? true : nativeEng, seenFileIds: [], sessionId: crypto.randomUUID() };
+    if (!isTestMode && isProlific === null) {
+      setError('Please answer the Prolific question.');
+      return;
+    }
+    const session = { birthYear: year, nativeEng: isTestMode ? true : nativeEng, isProlific: isTestMode ? false : isProlific, seenFileIds: [], sessionId: crypto.randomUUID() };
     localStorage.setItem('gaydar_session', JSON.stringify(session));
     router.push('/quiz');
   }
@@ -98,6 +103,32 @@ export default function LandingPage() {
                           : 'border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700'
                       }`}
                       style={nativeEng === opt.value
+                        ? { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }
+                        : {}}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-zinc-700 mb-2.5">
+                  Are you completing this for Prolific?{' '}
+                  <span className="font-normal text-zinc-400">(If you don&apos;t know what that is, mark No.)</span>
+                </label>
+                <div className="flex gap-3">
+                  {([{ label: 'Yes', value: true }, { label: 'No', value: false }] as const).map(opt => (
+                    <button
+                      key={String(opt.value)}
+                      type="button"
+                      onClick={() => setIsProlific(opt.value)}
+                      className={`flex-1 py-3 rounded-xl border text-sm font-semibold transition-all ${
+                        isProlific === opt.value
+                          ? 'text-white shadow-md shadow-indigo-200'
+                          : 'border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700'
+                      }`}
+                      style={isProlific === opt.value
                         ? { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }
                         : {}}
                     >

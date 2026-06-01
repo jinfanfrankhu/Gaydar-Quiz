@@ -12,12 +12,13 @@ interface RequestBody {
   ratings: RatingInput[];
   birthYear: number;
   nativeEng: boolean;
+  isProlific: boolean;
   sessionId: string;
 }
 
 export async function POST(req: NextRequest) {
   const body: RequestBody = await req.json();
-  const { ratings: ratingInputs, birthYear, nativeEng, sessionId } = body;
+  const { ratings: ratingInputs, birthYear, nativeEng, isProlific, sessionId } = body;
 
   const fileIds = ratingInputs.map(r => r.fileId);
 
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
       fileId: r.fileId,
       birthYear,
       nativeEng,
+      isProlific,
       rating: r.rating,
     }))
   );

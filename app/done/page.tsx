@@ -3,11 +3,12 @@ import Link from 'next/link';
 export default async function DonePage({
   searchParams,
 }: {
-  searchParams: Promise<{ score?: string; total?: string }>;
+  searchParams: Promise<{ score?: string; total?: string; prolific?: string }>;
 }) {
   const params = await searchParams;
   const score = parseFloat(params.score ?? '0');
   const total = parseInt(params.total ?? '0');
+  const isProlific = params.prolific === 'true';
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-zinc-50">
@@ -33,6 +34,14 @@ export default async function DonePage({
           Thanks for participating. Your responses help us understand how listeners perceive
           sexuality from voice — and whether factors like age or language background play a role.
         </p>
+
+        {isProlific && (
+          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-5 mb-6 text-center">
+            <p className="text-xs text-indigo-500 font-semibold uppercase tracking-wide mb-2">Prolific Completion Code</p>
+            <p className="text-2xl font-bold text-indigo-700 tracking-widest">TODO: PLACEHOLDER</p>
+            <p className="text-xs text-indigo-400 mt-2">Enter this code on Prolific to confirm your submission.</p>
+          </div>
+        )}
 
         <Link
           href="/"
