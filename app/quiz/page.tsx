@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { computeRandomPMF, getRandomPercentile } from '@/lib/randomGuesser';
 
 interface Session {
   birthYear: number;
@@ -38,6 +39,64 @@ function calcPoints(userRating: number, trueScore: number): number {
 }
 
 type Phase = 'loading' | 'rating' | 'results' | 'empty';
+
+function RandomGuesserChart({ userScore, nClips }: { userScore: number; nClips: number }) {
+  const percentile = getRandomPercentile(userScore, nClips);
+  const pmf = computeRandomPMF(nClips);
+
+  // Work in half-points (integers) to avoid float comparison issues
+  const userHp = Math.round(userScore * 2);
+  const lo = Math.max(0, userHp - 10);
+  const hi = Math.min(nClips * 2, userHp + 10);
+
+  const windowBars: { score: number; hp: number; prob: number }[] = [];
+  for (let hp = lo; hp <= hi; hp++) {
+    const score = hp / 2;
+    windowBars.push({ score, hp, prob: pmf.get(score) ?? 0 });
+  }
+
+  const maxProb = Math.max(...windowBars.map(w => w.prob), 0.001);
+
+  return (
+    <div className="bg-white border border-zinc-200 rounded-xl p-4 mb-6">
+      <div className="text-center mb-4">
+        <p className="text-3xl font-bold text-indigo-600">You are {percentile}%</p>
+        <p className="text-sm text-zinc-500">better than random guessing!</p>
+      </div>
+
+      <p className="text-[10px] text-zinc-400 uppercase tracking-wide mb-2">
+        Score distribution — random guesser ({nClips} clips)
+      </p>
+
+      {/* Bars — explicit px heights; gap-1 for visible separation */}
+      <div className="flex items-end gap-1 h-16">
+        {windowBars.map(({ score, hp, prob }) => (
+          <div
+            key={hp}
+            title={`${score} pts`}
+            className={`flex-1 rounded-t-sm cursor-default ${hp === userHp ? 'bg-indigo-500' : 'bg-zinc-200'}`}
+            style={{ height: `${Math.max(2, Math.round((prob / maxProb) * 64))}px` }}
+          />
+        ))}
+      </div>
+
+      {/* X-axis: label only whole-number scores to avoid crowding */}
+      <div className="flex gap-1 mt-1">
+        {windowBars.map(({ score, hp }) => (
+          <div key={hp} className="flex-1 text-center">
+            <span className={`text-[9px] ${Number.isInteger(score) ? 'text-zinc-400' : 'text-transparent'}`}>
+              {Number.isInteger(score) ? score : '·'}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <p className="text-center text-xs text-zinc-400 mt-2">
+        Your score: <strong className="text-zinc-700">{userScore}</strong> (shown in blue)
+      </p>
+    </div>
+  );
+}
 
 export default function QuizPage() {
   const router = useRouter();
@@ -211,6 +270,11 @@ export default function QuizPage() {
               </div>
             ))}
           </div>
+
+          <RandomGuesserChart
+            userScore={totalScore}
+            nClips={session!.seenFileIds.length}
+          />
 
           <p className="text-center text-sm text-zinc-400 mb-6">
             Running total: <strong className="text-zinc-700">{totalScore}</strong> pts
