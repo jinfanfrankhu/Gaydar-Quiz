@@ -15,6 +15,17 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Test Your Gaydar",
   description: "A voice perception experiment. Can you tell if someone is gay or straight from their voice?",
+  openGraph: {
+    title: "Test Your Gaydar",
+    description: "A voice perception experiment. Can you tell if someone is gay or straight from their voice?",
+    images: [{ url: "/gaydar_radar_in_rainbow_pride_colors.webp" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Test Your Gaydar",
+    description: "A voice perception experiment. Can you tell if someone is gay or straight from their voice?",
+    images: ["/gaydar_radar_in_rainbow_pride_colors.webp"],
+  },
 };
 
 export default function RootLayout({
