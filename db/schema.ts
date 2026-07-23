@@ -11,8 +11,10 @@ export const ratings = pgTable('ratings', {
   sessionId:  text('session_id'),               // UUID generated on landing page; nullable for old rows
   fileId:     text('file_id').notNull(),
   birthYear:  integer('birth_year').notNull(),
+  raterRace:  text("race"),                      // NULL = added post-ratings.
   nativeEng:  boolean('native_eng').notNull(),
   isProlific: boolean('is_prolific'),            // NULL = pre-Prolific launch (unknown), false = organic, true = Prolific
+  isStraight: boolean('is_straight'),
   rating:     integer('rating').notNull(),       // 1-5
   createdAt:  timestamp('created_at').defaultNow(),
 }, (t) => [

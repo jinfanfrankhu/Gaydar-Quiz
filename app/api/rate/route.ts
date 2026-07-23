@@ -11,14 +11,16 @@ interface RatingInput {
 interface RequestBody {
   ratings: RatingInput[];
   birthYear: number;
+  raterRace: string;
   nativeEng: boolean;
   isProlific: boolean;
+  isStraight: boolean;
   sessionId: string;
 }
 
 export async function POST(req: NextRequest) {
   const body: RequestBody = await req.json();
-  const { ratings: ratingInputs, birthYear, nativeEng, isProlific, sessionId } = body;
+  const { ratings: ratingInputs, birthYear, raterRace, nativeEng, isProlific, isStraight, sessionId } = body;
 
   const fileIds = ratingInputs.map(r => r.fileId);
 
@@ -28,8 +30,10 @@ export async function POST(req: NextRequest) {
       sessionId,
       fileId: r.fileId,
       birthYear,
+      raterRace,
       nativeEng,
       isProlific,
+      isStraight,
       rating: r.rating,
     }))
   );

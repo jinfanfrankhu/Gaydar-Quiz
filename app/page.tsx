@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation';
 export default function LandingPage() {
   const router = useRouter();
   const [birthYear, setBirthYear] = useState('');
+  const [raterRace, setRaterRace] = useState('');
   const [nativeEng, setNativeEng] = useState<boolean | null>(null);
+  const [isStraight, setIsStraight] = useState<boolean | null>(null);
   const [isProlific, setIsProlific] = useState<boolean | null>(null);
   const [error, setError] = useState('');
 
@@ -18,6 +20,10 @@ export default function LandingPage() {
       setError('Please enter a valid birth year (1920–2010).');
       return;
     }
+    if (!isTestMode && raterRace === '') {
+      setError('Please enter your race.');
+      return;
+    }
     if (!isTestMode && nativeEng === null) {
       setError('Please select your English background.');
       return;
@@ -26,7 +32,11 @@ export default function LandingPage() {
       setError('Please answer the Prolific question.');
       return;
     }
-    const session = { birthYear: year, nativeEng: isTestMode ? true : nativeEng, isProlific: isTestMode ? false : isProlific, seenFileIds: [], sessionId: crypto.randomUUID() };
+    if (!isTestMode && isStraight === null) {
+      setError('Please indicate your sexual orientation');
+      return;
+    }
+    const session = { birthYear: year, nativeEng: isTestMode ? true : nativeEng, isProlific: isTestMode ? false : isProlific, raterRace: isTestMode ? '' : raterRace, isStraight: isTestMode ? true : isStraight, seenFileIds: [], sessionId: crypto.randomUUID() };
     localStorage.setItem('gaydar_session', JSON.stringify(session));
     router.push('/quiz');
   }
@@ -88,6 +98,19 @@ export default function LandingPage() {
               </div>
 
               <div>
+                <label className="block text-sm font-semibold text-zinc-700 mb-2">
+                  What race do you identify as?
+                </label>
+                <input
+                  type="text"
+                  value={raterRace}
+                  onChange={e => setRaterRace(e.target.value)}
+                  placeholder="In as much or as little detail as you prefer"
+                  className="w-full border border-zinc-200 rounded-xl px-4 py-3 text-base text-zinc-900 placeholder-zinc-400 bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent focus:bg-white transition-colors"
+                />
+              </div>
+
+              <div>
                 <label className="block text-sm font-semibold text-zinc-700 mb-2.5">
                   Is English your native language?
                 </label>
@@ -129,6 +152,31 @@ export default function LandingPage() {
                           : 'border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700'
                       }`}
                       style={isProlific === opt.value
+                        ? { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }
+                        : {}}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-zinc-700 mb-2.5">
+                  Do you identify as straight?
+                </label>
+                <div className="flex gap-3">
+                  {([{ label: 'Yes', value: true }, { label: 'No', value: false }] as const).map(opt => (
+                    <button
+                      key={String(opt.value)}
+                      type="button"
+                      onClick={() => setIsStraight(opt.value)}
+                      className={`flex-1 py-3 rounded-xl border text-sm font-semibold transition-all ${
+                        isStraight === opt.value
+                          ? 'text-white shadow-md shadow-indigo-200'
+                          : 'border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700'
+                      }`}
+                      style={isStraight === opt.value
                         ? { background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', border: 'none' }
                         : {}}
                     >

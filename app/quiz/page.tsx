@@ -6,8 +6,10 @@ import { computeRandomPMF, getRandomPercentile } from '@/lib/randomGuesser';
 
 interface Session {
   birthYear: number;
+  raterRace?: string;
   nativeEng: boolean;
   isProlific?: boolean;
+  isStraight?: boolean;
   seenFileIds: string[];
   sessionId: string;
 }
@@ -166,8 +168,10 @@ export default function QuizPage() {
       body: JSON.stringify({
         ratings: finalCollected,
         birthYear: session.birthYear,
+        raterRace: session.raterRace,
         nativeEng: session.nativeEng,
         isProlific: session.isProlific ?? false,
+        isStraight: session.isStraight,
         sessionId: session.sessionId,
       }),
     });
